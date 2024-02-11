@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
+	"os"
 
 	"github.com/NikolaJankovikj/go-rest-api/database"
-	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 func main() {
@@ -17,21 +15,11 @@ func main() {
 
 	defer database.CloseMongoDB()
 
-	app := fiber.New()
+	app := generateApp()
 
-	app.Post("/", func(c *fiber.Ctx) error {
-		sampleDoc := bson.M{"name": "sample todo"}
-		collection := database.GetCollection("todos")
-		nDoc, err := collection.InsertOne(context.TODO(), sampleDoc)
+	port := os.Getenv("PORT")
 
-		if err != nil {
-			c.Status(fiber.StatusInternalServerError).SendString("Error inserting todo")
-		}
-
-		return c.JSON(nDoc)
-	})
-
-	app.Listen(":3000")
+	app.Listen(":" + port)
 }
 
 func initApp() error {
@@ -50,9 +38,12 @@ func initApp() error {
 }
 
 func loadEnv() error {
-	err := godotenv.Load()
-	if err != nil {
-		return err
+	goEnv := os.Getenv("GO_ENV")
+	if goEnv == "" {
+		err := godotenv.Load()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/NikolaJankovikj/go-rest-api/routers"
 	"os"
 
 	"github.com/NikolaJankovikj/go-rest-api/database"
@@ -15,7 +16,7 @@ func main() {
 
 	defer database.CloseMongoDB()
 
-	app := generateApp()
+	app := routers.GenerateApp()
 
 	port := os.Getenv("PORT")
 
